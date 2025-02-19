@@ -1,39 +1,155 @@
-# Base64 Converter Chrome Extension
+# String Encoder/Decoder Chrome Extension
 
-Base64 Converter is a Chrome extension that provides a handy tool to encode and decode strings into Base64 format, all within your browser.
+A powerful Chrome extension that provides a comprehensive suite of encoding, decoding, and hash analysis tools, all within your browser. Convert text between various formats with a clean, modern interface.
 
 ![Extension Screenshot](images/screenshot.png)
 
 ## Features
 
-- Encode text to Base64
-- Decode Base64 to text
-- Simple and intuitive interface
+### Comprehensive Encoding Methods
+
+#### Common Formats
+- **Base64**: Standard base64 encoding/decoding
+- **URL Encoding**: Encode/decode URLs and URI components
+- **HTML Entities**: Convert special characters to/from HTML entities
+
+#### Cryptographic Formats
+- **Base32**: RFC 4648 compliant Base32 encoding
+- **JWT**: JSON Web Token encoding/decoding
+- **Caesar Cipher**: Classical shift cipher (default shift: 3)
+
+#### Legacy & Special Formats
+- **ROT13**: Simple letter substitution cipher
+- **ASCII85**: Compact encoding used in PostScript
+- **Binary**: Text to binary conversion
+- **Morse Code**: International Morse Code conversion
+- **Hexadecimal**: Text to hex conversion
+
+### Hash Detection & Analysis
+Automatically detect and analyze various hash formats:
+- **MD5**: 32 characters
+- **SHA1**: 40 characters
+- **SHA256**: 64 characters
+- **SHA512**: 128 characters
+- **RIPEMD160**: 40 characters
+- **BCrypt**: Including salt and cost factor
+- **Argon2**: Modern password hashing
+- **NTLM**: Windows authentication
+- **MySQL**: Both v4 and v5 formats
+
+For each detected hash, the tool provides:
+- Hash type identification
+- Confidence level
+- Format specifications
+- Technical description
+- Common usage context
+
+### Technical Features
+- Real-time encoding/decoding
+- Intelligent hash format detection
+- Error handling and validation
+- Support for special characters
+- UTF-8 compatibility
+- No external dependencies
+- Offline functionality
+
+### User Interface
+- Clean, modern dark theme
+- Monospace font (JetBrains Mono)
+- Context-aware controls
+- Dynamic mode switching
+- Copy to clipboard functionality
+- Clear all fields with one click
+- Visual feedback for actions
+- Custom scrollbar design
+- Responsive layout
 
 ## Installation
 
-To install this extension, follow these steps:
+### From Chrome Web Store
+1. Visit the [Chrome Web Store](link-to-store) (Coming soon)
+2. Click "Add to Chrome"
+3. Confirm the installation
 
-1. Download or clone this repository to your local machine.
-2. Open Google Chrome and navigate to `chrome://extensions`.
-3. Enable 'Developer mode' by clicking the toggle in the top right corner.
-4. Click on 'Load unpacked'.
-5. Navigate to the directory where you cloned the repository and click 'Select'.
-
-The extension should now be visible in Chrome's extension toolbar.
+### Manual Installation (Developer Mode)
+1. Clone this repository:
+   ```bash
+   git clone https://github.com/yourusername/string-encoder-decoder.git
+   ```
+2. Open Chrome and navigate to `chrome://extensions/`
+3. Enable "Developer mode" using the toggle in the top-right corner
+4. Click "Load unpacked"
+5. Select the directory containing the extension files
 
 ## Usage
 
-To use the extension:
+1. Click the extension icon in your Chrome toolbar
+2. Select your desired operation from the dropdown menu:
+   - Common encoding formats
+   - Cryptographic formats
+   - Legacy formats
+   - Hash detection
+3. Based on your selection:
+   - For encoding/decoding: Enter text and click respective button
+   - For hash detection: Enter hash and click "Detect Hash"
+4. Additional actions:
+   - Use "Copy" to copy the result to your clipboard
+   - Use "Clear" to reset both input and output fields
 
-1. Click on the Base64 Converter icon in the Chrome extension toolbar.
-2. In the popup, enter the text you want to encode or decode into the input textarea.
-3. Click 'Encode' to convert text to Base64 or 'Decode' to convert Base64 to text. The result will be displayed in the output textarea.
+## Technical Details
+
+### Encoding Implementations
+- Base64: Standard btoa/atob implementation
+- Base32: RFC 4648 compliant implementation
+- JWT: Basic JWT structure with header and payload
+- Caesar Cipher: Customizable shift parameter (default: 3)
+- ASCII85: Adobe-style ASCII85 encoding
+
+### Hash Detection Algorithm
+- Pattern matching using regular expressions
+- Multiple hash format support
+- Probability-based detection
+- Specific format validation
+- Comprehensive hash information
+
+### Security Considerations
+- All processing is done locally in the browser
+- No data is sent to external servers
+- No data persistence between sessions
+- Input validation for all formats
+
+## Browser Compatibility
+
+- Google Chrome (Version 88+)
+- Chromium-based browsers:
+  - Microsoft Edge
+  - Brave
+  - Opera
+  - Vivaldi
 
 ## Contributing
 
-Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
+Contributions are welcome! Here's how you can help:
+
+1. Fork the repository
+2. Create a new branch (`git checkout -b feature/amazing-feature`)
+3. Make your changes
+4. Commit your changes (`git commit -m 'Add some amazing feature'`)
+5. Push to the branch (`git push origin feature/amazing-feature`)
+6. Open a Pull Request
+
+Please ensure your PR adheres to:
+- Consistent code style
+- Proper documentation
+- Appropriate test coverage
 
 ## License
 
-[MIT](https://choosealicense.com/licenses/mit/)
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## Support
+
+If you encounter any issues or have suggestions:
+1. Check the [Issues](https://github.com/yourusername/string-encoder-decoder/issues) page
+2. Create a new issue if needed
+3. Provide detailed information about the problem

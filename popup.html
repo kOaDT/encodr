@@ -1,17 +1,43 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" type="text/css" href="styles.css">
   </head>
   <body>
-    <h1>Base64 Converter</h1>
-    <textarea id="input"></textarea>
+    <h1>String Encoder/Decoder</h1>
+    <select id="encodingType">
+        <optgroup label="Common">
+            <option value="base64">Base64</option>
+            <option value="uri">URL Encode</option>
+            <option value="html">HTML Entities</option>
+        </optgroup>
+        <optgroup label="Cryptographic">
+            <option value="base32">Base32</option>
+            <option value="jwt">JWT</option>
+            <option value="caesar">Caesar Cipher (Shift 3)</option>
+        </optgroup>
+        <optgroup label="Legacy">
+            <option value="rot13">ROT13</option>
+            <option value="ascii85">ASCII85</option>
+        </optgroup>
+        <optgroup label="Analysis">
+            <option value="hash-detect">Hash Detection</option>
+        </optgroup>
+    </select>
+    <textarea id="input" placeholder="Enter text to encode/decode..."></textarea>
     <div id="flexButton">
-        <button id="encodeButton">Encode</button>
-        <button id="decodeButton">Decode</button>
+        <div id="normalButtons">
+            <button id="encodeButton">Encode</button>
+            <button id="decodeButton">Decode</button>
+        </div>
+        <div id="hashButtons" style="display: none;">
+            <button id="detectHashButton">Detect Hash</button>
+        </div>
+        <button id="copyButton">Copy</button>
+        <button id="clearButton">Clear</button>
     </div>
-    <textarea id="output"></textarea>
+    <textarea id="output" placeholder="Result will appear here..." readonly></textarea>
     <script src="popup.js"></script>
   </body>
 </html>

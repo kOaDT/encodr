@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
-  "name": "Base64 Converter",
-  "version": "1.0",
+  "name": "String Encoder/Decoder",
+  "version": "2.0",
   "action": {
     "default_popup": "popup.html",
     "default_icon": {

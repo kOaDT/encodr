@@ -1,42 +1,213 @@
+:root {
+  --primary-color: #00f5d4;
+  --bg-dark: #1a1b26;
+  --bg-darker: #16161e;
+  --text-primary: #a9b1d6;
+  --text-bright: #c0caf5;
+  --border-color: #292e42;
+  --accent-color: #7aa2f7;
+  --error-color: #f7768e;
+  --success-color: #9ece6a;
+}
+
 body {
-  font-family: 'Open Sans', sans-serif;
-  padding: 15px;
-  background-color: #f5f5f5;
-  width: 500px;
+  font-family: 'JetBrains Mono', monospace;
+  padding: 20px;
+  background-color: var(--bg-dark);
+  width: 600px;
+  max-width: 100%;
+  color: var(--text-primary);
 }
 
 h1 {
-  color: #3c4f76;
+  color: var(--primary-color);
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-bottom: 1.5rem;
+  text-align: center;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  position: relative;
+}
+
+h1::after {
+  content: '';
+  position: absolute;
+  bottom: -8px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 60px;
+  height: 3px;
+  background: var(--primary-color);
+  border-radius: 2px;
+}
+
+select {
+  width: 100%;
+  padding: 12px;
+  margin-bottom: 1rem;
+  border-radius: 6px;
+  border: 1px solid var(--border-color);
+  background-color: var(--bg-darker);
+  color: var(--text-bright);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  appearance: none;
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23a9b1d6' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+  background-repeat: no-repeat;
+  background-position: right 1rem center;
+  background-size: 1em;
+}
+
+select:focus {
+  outline: none;
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 2px rgba(0, 245, 212, 0.1);
 }
 
 textarea {
-  width: 90%;
+  width: 100%;
   height: 120px;
-  margin: 10px 0;
-  padding: 10px;
-  font-size: 16px;
-  border-radius: 5px;
-  border: 1px solid #ddd;
-  box-shadow: 0 0 10px 0 rgba(0,0,0,0.1);
+  margin: 12px 0;
+  padding: 12px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.9rem;
+  border-radius: 6px;
+  border: 1px solid var(--border-color);
+  background-color: var(--bg-darker);
+  color: var(--text-bright);
+  resize: vertical;
+  transition: all 0.2s ease;
 }
 
-button {
-  margin-right: 10px;
-  padding: 10px 20px;
-  border: none;
-  border-radius: 5px;
-  background-color: #3c4f76;
-  color: #ffffff;
-  font-size: 16px;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-}
-
-button:hover {
-  background-color: #5a6f9c;
+textarea:focus {
+  outline: none;
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 2px rgba(0, 245, 212, 0.1);
 }
 
 #flexButton {
-    display: flex;
-    justify-content: start;
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  margin: 1rem 0;
+  flex-wrap: wrap;
+}
+
+#normalButtons, #hashButtons {
+  display: flex;
+  gap: 12px;
+}
+
+#detectHashButton {
+  border-color: var(--accent-color);
+}
+
+#detectHashButton:hover {
+  background-color: rgba(122, 162, 247, 0.1);
+}
+
+optgroup {
+  color: var(--text-bright);
+  font-weight: 600;
+}
+
+optgroup option {
+  color: var(--text-primary);
+  font-weight: normal;
+  padding-left: 12px;
+}
+
+button {
+  padding: 10px 20px;
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  background-color: var(--bg-darker);
+  color: var(--text-bright);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    120deg,
+    transparent,
+    rgba(0, 245, 212, 0.1),
+    transparent
+  );
+  transition: 0.5s;
+}
+
+button:hover::before {
+  left: 100%;
+}
+
+button:hover {
+  border-color: var(--primary-color);
+  background-color: rgba(0, 245, 212, 0.1);
+}
+
+#copyButton {
+  border-color: var(--success-color);
+}
+
+#copyButton:hover {
+  background-color: rgba(158, 206, 106, 0.1);
+}
+
+#clearButton {
+  border-color: var(--error-color);
+}
+
+#clearButton:hover {
+  background-color: rgba(247, 118, 142, 0.1);
+}
+
+.notification {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  padding: 12px 24px;
+  border-radius: 6px;
+  background-color: var(--bg-darker);
+  border: 1px solid var(--success-color);
+  color: var(--success-color);
+  font-size: 0.9rem;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.notification.show {
+  opacity: 1;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg-darker);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--border-color);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--primary-color);
 }
