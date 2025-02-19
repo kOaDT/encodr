@@ -1,6 +1,6 @@
 {
   "manifest_version": 3,
-  "name": "String Encoder/Decoder",
+  "name": "Encodr",
   "version": "2.0",
   "action": {
     "default_popup": "popup.html",

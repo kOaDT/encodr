@@ -1,4 +1,4 @@
-# String Encoder/Decoder Chrome Extension
+# Encodr Chrome Extension
 
 A powerful Chrome extension that provides a comprehensive suite of encoding, decoding, and hash analysis tools, all within your browser. Convert text between various formats with a clean, modern interface.
 
