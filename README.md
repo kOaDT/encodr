@@ -67,14 +67,14 @@ For each detected hash, the tool provides:
 ## Installation
 
 ### From Chrome Web Store
-1. Visit the [Chrome Web Store](link-to-store) (Coming soon)
+1. Visit the [Chrome Web Store](https://chromewebstore.google.com/detail/base64-converter/mbmknbmpajagofnlcaoajkgammegbblg?authuser=0&hl=fr&pli=1) (Coming soon)
 2. Click "Add to Chrome"
 3. Confirm the installation
 
 ### Manual Installation (Developer Mode)
 1. Clone this repository:
    ```bash
-   git clone https://github.com/yourusername/string-encoder-decoder.git
+   git clone https://github.com/kOaDT/encodr.git
    ```
 2. Open Chrome and navigate to `chrome://extensions/`
 3. Enable "Developer mode" using the toggle in the top-right corner
@@ -138,11 +138,6 @@ Contributions are welcome! Here's how you can help:
 5. Push to the branch (`git push origin feature/amazing-feature`)
 6. Open a Pull Request
 
-Please ensure your PR adheres to:
-- Consistent code style
-- Proper documentation
-- Appropriate test coverage
-
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
@@ -150,6 +145,6 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ## Support
 
 If you encounter any issues or have suggestions:
-1. Check the [Issues](https://github.com/yourusername/string-encoder-decoder/issues) page
+1. Check the [Issues](https://github.com/kOaDT/encodr/issues) page
 2. Create a new issue if needed
 3. Provide detailed information about the problem
