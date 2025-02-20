@@ -3,9 +3,10 @@
   <head>
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" type="text/css" href="styles.css">
+    <script type="module" src="src/popup.js"></script>
   </head>
   <body>
-    <h1>Encodr</h1>
+    <h1>Encodr</h1>    
     <select id="encodingType">
         <optgroup label="Common">
             <option value="base64">Base64</option>
@@ -14,7 +15,7 @@
         </optgroup>
         <optgroup label="Cryptographic">
             <option value="base32">Base32</option>
-            <option value="jwt">JWT</option>
+            <option value="jwt">JWT (JSON Web Token)</option>
             <option value="caesar">Caesar Cipher (Shift 3)</option>
         </optgroup>
         <optgroup label="Legacy">
@@ -25,6 +26,13 @@
             <option value="hash-detect">Hash Detection</option>
         </optgroup>
     </select>
+    <div id="jwtOptions" style="display: none;">
+        <input type="text" id="jwtSecret" placeholder="Enter JWT secret key...">
+        <label class="checkbox-label">
+            <input type="checkbox" id="jwtVerify">
+            Verify signature when decoding
+        </label>
+    </div>
     <textarea id="input" placeholder="Enter text to encode/decode..."></textarea>
     <div id="flexButton">
         <div id="normalButtons">
@@ -38,6 +46,6 @@
         <button id="clearButton">Clear</button>
     </div>
     <textarea id="output" placeholder="Result will appear here..." readonly></textarea>
-    <script src="popup.js"></script>
+    <p>Encodr is a tool for encoding and decoding text using various algorithms. <a class="github-link" href="https://github.com/kOaDT/encodr" target="_blank">To report an issue or suggest a feature, click here.</a></p>
   </body>
 </html>

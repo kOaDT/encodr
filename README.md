@@ -67,7 +67,7 @@ For each detected hash, the tool provides:
 ## Installation
 
 ### From Chrome Web Store
-1. Visit the [Chrome Web Store](https://chromewebstore.google.com/detail/base64-converter/mbmknbmpajagofnlcaoajkgammegbblg?authuser=0&hl=fr&pli=1) (Coming soon)
+1. Visit the [Chrome Web Store](https://chromewebstore.google.com/detail/base64-converter/mbmknbmpajagofnlcaoajkgammegbblg?authuser=0&hl=fr&pli=1)
 2. Click "Add to Chrome"
 3. Confirm the installation
 
