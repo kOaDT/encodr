@@ -17,6 +17,7 @@ A powerful Chrome extension that provides a comprehensive suite of encoding, dec
 - **Base32**: RFC 4648 compliant Base32 encoding
 - **JWT**: JSON Web Token encoding/decoding
 - **Caesar Cipher**: Classical shift cipher (default shift: 3)
+- **Vigenère Cipher**: Polyalphabetic substitution cipher using a keyword
 
 #### Legacy & Special Formats
 - **ROT13**: Simple letter substitution cipher
@@ -91,6 +92,7 @@ For each detected hash, the tool provides:
    - Hash detection
 3. Based on your selection:
    - For encoding/decoding: Enter text and click respective button
+   - For Vigenère cipher: Enter text and provide an encryption key
    - For hash detection: Enter hash and click "Detect Hash"
 4. Additional actions:
    - Use "Copy" to copy the result to your clipboard
@@ -103,6 +105,7 @@ For each detected hash, the tool provides:
 - Base32: RFC 4648 compliant implementation
 - JWT: Basic JWT structure with header and payload
 - Caesar Cipher: Customizable shift parameter (default: 3)
+- Vigenère Cipher: Polyalphabetic substitution using a keyword
 - ASCII85: Adobe-style ASCII85 encoding
 
 ### Hash Detection Algorithm

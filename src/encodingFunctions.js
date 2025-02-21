@@ -519,5 +519,68 @@ export const encodingFunctions = {
             
             return new TextDecoder().decode(new Uint8Array(bytes));
         }
+    },
+
+    // Vigenère cipher: Polyalphabetic substitution cipher using a keyword
+    // Each letter is shifted based on the corresponding letter in the keyword
+    vigenere: {
+        encode: (text, key) => {
+            if (!key) throw new Error('Encryption key is required for Vigenère cipher');
+            
+            key = validateInput(key, {
+                allowedChars: 'A-Za-z',
+                type: 'vigenere-key'
+            });
+
+            // Convert key to uppercase and remove non-alphabetic characters
+            key = key.toUpperCase().replace(/[^A-Z]/g, '');
+            if (key.length === 0) {
+                throw new Error('Key must contain at least one letter');
+            }
+
+            return text.replace(/[a-zA-Z]/g, (char, index) => {
+                const isUpperCase = char === char.toUpperCase();
+                const baseChar = isUpperCase ? 'A' : 'a';
+                const keyChar = key[index % key.length].toUpperCase();
+                
+                // Calculate shift based on key character (A=0, B=1, etc.)
+                const shift = keyChar.charCodeAt(0) - 'A'.charCodeAt(0);
+                
+                // Apply shift to current character
+                const charCode = char.toUpperCase().charCodeAt(0) - 'A'.charCodeAt(0);
+                const shiftedCode = ((charCode + shift) % 26) + baseChar.charCodeAt(0);
+                
+                return String.fromCharCode(shiftedCode);
+            });
+        },
+        decode: (text, key) => {
+            if (!key) throw new Error('Decryption key is required for Vigenère cipher');
+            
+            key = validateInput(key, {
+                allowedChars: 'A-Za-z',
+                type: 'vigenere-key'
+            });
+
+            // Convert key to uppercase and remove non-alphabetic characters
+            key = key.toUpperCase().replace(/[^A-Z]/g, '');
+            if (key.length === 0) {
+                throw new Error('Key must contain at least one letter');
+            }
+
+            return text.replace(/[a-zA-Z]/g, (char, index) => {
+                const isUpperCase = char === char.toUpperCase();
+                const baseChar = isUpperCase ? 'A' : 'a';
+                const keyChar = key[index % key.length].toUpperCase();
+                
+                // Calculate reverse shift based on key character
+                const shift = keyChar.charCodeAt(0) - 'A'.charCodeAt(0);
+                
+                // Apply reverse shift to current character
+                const charCode = char.toUpperCase().charCodeAt(0) - 'A'.charCodeAt(0);
+                const shiftedCode = ((charCode - shift + 26) % 26) + baseChar.charCodeAt(0);
+                
+                return String.fromCharCode(shiftedCode);
+            });
+        }
     }
 }; 

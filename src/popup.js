@@ -14,6 +14,15 @@ document.addEventListener('DOMContentLoaded', () => {
     const encodeDecodeButtons = document.getElementById('normalButtons');
     const detectHashButton = document.getElementById('hashButtons');
 
+    // Add Vigenère key input handling
+    const vigenereOptions = document.createElement('div');
+    vigenereOptions.id = 'vigenereOptions';
+    vigenereOptions.style.display = 'none';
+    vigenereOptions.innerHTML = `
+        <input type="text" id="vigenereKey" placeholder="Enter Vigenère key...">
+    `;
+    jwtOptions.parentNode.insertBefore(vigenereOptions, jwtOptions.nextSibling);
+
     encodingType.addEventListener('change', function() {
         jwtOptions.style.display = this.value === 'jwt' ? 'block' : 'none';
         
@@ -24,6 +33,8 @@ document.addEventListener('DOMContentLoaded', () => {
             encodeDecodeButtons.style.display = 'block';
             detectHashButton.style.display = 'none';
         }
+
+        vigenereOptions.style.display = this.value === 'vigenere' ? 'block' : 'none';
     });
 
     document.getElementById('encodeButton').addEventListener('click', async () => {
@@ -58,6 +69,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 const result = await encodingFunctions.jwt.encode(inputValue, secretElement.value);
                 output.value = result;
                 showNotification('Successfully encoded to JWT', 'success');
+            } else if (type === 'vigenere') {
+                const keyElement = document.getElementById('vigenereKey');
+                if (!keyElement.value.trim()) {
+                    keyElement.classList.add('input-error');
+                    throw new EncodrError('Key is required for Vigenère cipher', 'warning');
+                }
+                output.value = encodingFunctions.vigenere.encode(inputValue, keyElement.value);
+                showNotification('Successfully encoded', 'success');
             } else {
                 output.value = encodingFunctions[type].encode(inputValue);
                 showNotification('Successfully encoded', 'success');
@@ -95,6 +114,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 
                 output.value = result;
                 showNotification('Successfully decoded JWT', 'success');
+            } else if (type === 'vigenere') {
+                const keyElement = document.getElementById('vigenereKey');
+                if (!keyElement.value.trim()) {
+                    keyElement.classList.add('input-error');
+                    throw new EncodrError('Key is required for Vigenère cipher', 'warning');
+                }
+                output.value = encodingFunctions.vigenere.decode(inputElement.value, keyElement.value);
+                showNotification('Successfully decoded', 'success');
             } else {
                 output.value = encodingFunctions[type].decode(inputElement.value);
                 showNotification('Successfully decoded', 'success');
