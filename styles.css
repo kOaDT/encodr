@@ -337,3 +337,37 @@ button:hover {
     border-color: var(--primary-color);
     box-shadow: 0 0 0 2px rgba(0, 245, 212, 0.1);
 }
+
+#hillOptions {
+    margin-bottom: .5rem;
+}
+
+#hillKey {
+    width: 95.7%;
+    padding: 12px;
+    margin-bottom: 0.5rem;
+    border-radius: 6px;
+    border: 1px solid var(--border-color);
+    background-color: var(--bg-darker);
+    color: var(--text-bright);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.9rem;
+    transition: all 0.2s ease;
+    box-sizing: border-box;
+}
+
+#hillKey:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 2px rgba(0, 245, 212, 0.1);
+}
+
+.matrix-info {
+    font-size: 0.8rem;
+    color: var(--text-primary);
+    margin-bottom: 0.5rem;
+    padding: 8px;
+    border-radius: 4px;
+    background-color: var(--bg-darker);
+    border: 1px solid var(--border-color);
+}

@@ -32,10 +32,25 @@ document.addEventListener('DOMContentLoaded', () => {
     `;
     jwtOptions.parentNode.insertBefore(playfairOptions, jwtOptions.nextSibling);
 
+    // Add Hill cipher key input handling
+    const hillOptions = document.createElement('div');
+    hillOptions.id = 'hillOptions';
+    hillOptions.style.display = 'none';
+    hillOptions.innerHTML = `
+        <input type="text" id="hillKey" placeholder="Enter Hill matrix (e.g., '2 3 1 4' for 2x2)">
+        <div class="matrix-info">
+            Format: Space-separated numbers for matrix
+            <br>2x2 example: 2 3 1 4
+            <br>3x3 example: 6 24 1 13 16 10 20 17 15
+        </div>
+    `;
+    document.body.insertBefore(hillOptions, input);
+
     encodingType.addEventListener('change', function() {
         jwtOptions.style.display = this.value === 'jwt' ? 'block' : 'none';
         vigenereOptions.style.display = this.value === 'vigenere' ? 'block' : 'none';
         playfairOptions.style.display = this.value === 'playfair' ? 'block' : 'none';
+        hillOptions.style.display = this.value === 'hill' ? 'block' : 'none';
         
         if (this.value === 'hash-detect') {
             encodeDecodeButtons.style.display = 'none';
@@ -74,7 +89,15 @@ document.addEventListener('DOMContentLoaded', () => {
                 throw new EncodrError('Input too large (max 100KB)', 'error');
             }
 
-            if (type === 'jwt') {
+            if (type === 'hill') {
+                const keyElement = document.getElementById('hillKey');
+                if (!keyElement.value.trim()) {
+                    keyElement.classList.add('input-error');
+                    throw new EncodrError('Matrix key is required for Hill cipher', 'warning');
+                }
+                output.value = encodingFunctions.hill.encode(inputValue, keyElement.value);
+                showNotification('Successfully encoded with Hill cipher', 'success');
+            } else if (type === 'jwt') {
                 const result = await encodingFunctions.jwt.encode(inputValue, secretElement.value);
                 output.value = result;
                 showNotification('Successfully encoded to JWT', 'success');
@@ -99,7 +122,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 showNotification('Successfully encoded', 'success');
             }
         } catch (error) {
-            handleError(error, type === 'jwt' && !secretElement.value.trim() ? secretElement : inputElement);
+            handleError(error, type === 'hill' ? document.getElementById('hillKey') : type === 'jwt' && !secretElement.value.trim() ? secretElement : inputElement);
         }
     });
 
@@ -109,7 +132,15 @@ document.addEventListener('DOMContentLoaded', () => {
         const type = encodingType.value;
         
         try {
-            if (type === 'jwt') {
+            if (type === 'hill') {
+                const keyElement = document.getElementById('hillKey');
+                if (!keyElement.value.trim()) {
+                    keyElement.classList.add('input-error');
+                    throw new EncodrError('Matrix key is required for Hill cipher', 'warning');
+                }
+                output.value = encodingFunctions.hill.decode(inputElement.value, keyElement.value);
+                showNotification('Successfully decoded with Hill cipher', 'success');
+            } else if (type === 'jwt') {
                 if (!inputElement.value.trim()) {
                     throw new EncodrError('Please enter a JWT token', 'warning');
                 }
@@ -152,7 +183,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 showNotification('Successfully decoded', 'success');
             }
         } catch (error) {
-            handleError(error, type === 'jwt' && !secretElement.value.trim() ? secretElement : inputElement);
+            handleError(error, type === 'hill' ? document.getElementById('hillKey') : type === 'jwt' && !secretElement.value.trim() ? secretElement : inputElement);
         }
     });
 

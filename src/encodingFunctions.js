@@ -1,7 +1,7 @@
 const INPUT_VALIDATION = {
-    MAX_LENGTH: 100000, // 100KB max
+    MAX_LENGTH: 100000,
     MIN_LENGTH: 1,
-    VALID_JSON_SIZE: 10000, // 10KB max pour JWT
+    VALID_JSON_SIZE: 10000,
 };
 
 function validateInput(text, options = {}) {
@@ -179,7 +179,6 @@ export const encodingFunctions = {
                 maxLength: INPUT_VALIDATION.VALID_JSON_SIZE
             });
             
-            // Valider que l'entrée est un JSON valide
             try {
                 JSON.parse(text);
             } catch (e) {
@@ -187,7 +186,7 @@ export const encodingFunctions = {
             }
 
             secretKey = validateInput(secretKey, {
-                minLength: 8,
+                minLength: 3,
                 maxLength: 1024,
                 type: 'secret'
             });
@@ -666,15 +665,102 @@ export const encodingFunctions = {
                 }
             }).join('').replace(/X$/, '');
         }
+    },
+
+    // Hill cipher: Polygraphic substitution cipher using linear algebra
+    // - Uses a key matrix to encode and decode messages
+    // - The key matrix must be a square matrix
+    // - The determinant of the key matrix must be coprime with 26
+    // - The key matrix must be invertible modulo 26
+    hill: {
+        encode: (text, key) => {
+            if (!key) throw new Error('Key matrix is required for Hill cipher');
+            
+            // Validate and parse key matrix
+            const keyMatrix = parseKeyMatrix(key);
+            const matrixSize = Math.sqrt(keyMatrix.length);
+            
+            // Verify matrix is valid for Hill cipher
+            const det = calculateDeterminant(keyMatrix, matrixSize);
+            if (!isValidDeterminant(det)) {
+                throw new Error('Invalid key matrix: determinant must be coprime with 26');
+            }
+            
+            // Remove non-alphabetic characters and convert to uppercase
+            text = text.toUpperCase().replace(/[^A-Z]/g, '');
+            
+            // Add 'X' to the end of the text if its length is not a multiple of the matrix size
+            while (text.length % matrixSize !== 0) {
+                text += 'X';
+            }
+            
+            let result = '';
+            
+            // Process text in blocks
+            for (let i = 0; i < text.length; i += matrixSize) {
+                const block = text.slice(i, i + matrixSize)
+                    .split('')
+                    .map(char => char.charCodeAt(0) - 65);
+                
+                const encrypted = multiplyMatrixVector(keyMatrix, block, matrixSize);
+                result += encrypted.map(n => String.fromCharCode((n % 26 + 26) % 26 + 65)).join('');
+            }
+            
+            return result;
+        },
+        
+        decode: (text, key) => {
+            if (!key) throw new Error('Key matrix is required for Hill cipher');
+            
+            // Validate and parse key matrix
+            const keyMatrix = parseKeyMatrix(key);
+            const matrixSize = Math.sqrt(keyMatrix.length);
+            
+            // Verify matrix is valid for Hill cipher
+            const det = calculateDeterminant(keyMatrix, matrixSize);
+            if (!isValidDeterminant(det)) {
+                throw new Error('Invalid key matrix: determinant must be coprime with 26');
+            }
+            
+            // Calculate inverse matrix
+            const inverseMatrix = calculateInverseMatrix(keyMatrix, matrixSize);
+            if (!inverseMatrix) {
+                throw new Error('Invalid key matrix: no modular multiplicative inverse exists');
+            }
+            
+            // Remove non-alphabetic characters and convert to uppercase
+            text = text.toUpperCase().replace(/[^A-Z]/g, '');
+            
+            let result = '';
+            
+            // Process text in blocks
+            for (let i = 0; i < text.length; i += matrixSize) {
+                const block = text.slice(i, i + matrixSize)
+                    .split('')
+                    .map(char => char.charCodeAt(0) - 65);
+                
+                const decrypted = multiplyMatrixVector(inverseMatrix, block, matrixSize);
+                result += decrypted.map(n => String.fromCharCode((n % 26 + 26) % 26 + 65)).join('');
+            }
+            
+            return result;
+        }
     }
 };
 
-// Helper functions for Playfair cipher
+
+/* ############################################################ */
+/* ##### HELPER FUNCTIONS ##################################### */
+/* ############################################################ */
+
+/**
+ * Create a Playfair matrix from a key
+ * @param {string} key - The key for the Playfair matrix
+ * @returns {Array} The Playfair matrix
+ */
 function createPlayfairMatrix(key) {
     // Create initial alphabet (without J)
     const alphabet = 'ABCDEFGHIKLMNOPQRSTUVWXYZ';
-    
-    // Remove duplicates from key and combine with remaining alphabet
     const uniqueChars = [...new Set(key + alphabet)];
     
     // Create 5x5 matrix
@@ -685,6 +771,12 @@ function createPlayfairMatrix(key) {
     return matrix;
 }
 
+/**
+ * Find a character in a Playfair matrix
+ * @param {Array} matrix - The Playfair matrix
+ * @param {string} char - The character to find
+ * @returns {Array} The coordinates of the character in the matrix
+ */
 function findInMatrix(matrix, char) {
     for (let i = 0; i < 5; i++) {
         for (let j = 0; j < 5; j++) {
@@ -694,4 +786,158 @@ function findInMatrix(matrix, char) {
         }
     }
     return [0, 0]; // Should never happen with valid input
+}
+
+/**
+ * Parse a key matrix from a string
+ * @param {string} key - The key for the matrix
+ * @returns {Array} The matrix
+ */
+function parseKeyMatrix(key) {
+    const matrix = key.trim().split(/\s+/).map(n => {
+        const num = parseInt(n);
+        if (isNaN(num)) throw new Error('Key matrix must contain valid numbers');
+        return ((num % 26) + 26) % 26;
+    });
+    
+    const size = Math.sqrt(matrix.length);
+    if (!Number.isInteger(size) || (size !== 2 && size !== 3)) {
+        throw new Error('Key matrix must be 2x2 or 3x3');
+    }
+    
+    return matrix;
+}
+
+/**
+ * Multiply a matrix by a vector
+ * @param {Array} matrix - The matrix
+ * @param {Array} vector - The vector
+ * @param {number} size - The size of the matrix
+ * @returns {Array} The result
+ */
+function multiplyMatrixVector(matrix, vector, size) {
+    const result = new Array(size).fill(0);
+    for (let i = 0; i < size; i++) {
+        for (let j = 0; j < size; j++) {
+            result[i] = (result[i] + matrix[i * size + j] * vector[j]) % 26;
+        }
+        result[i] = ((result[i] % 26) + 26) % 26;
+    }
+    return result;
+}
+
+/**
+ * Calculate the determinant of a matrix
+ * @param {Array} matrix - The matrix
+ * @param {number} size - The size of the matrix
+ * @returns {number} The determinant
+ */
+function calculateDeterminant(matrix, size) {
+    if (size === 2) {
+        return ((matrix[0] * matrix[3] - matrix[1] * matrix[2]) % 26 + 26) % 26;
+    }
+    
+    if (size === 3) {
+        return ((
+            matrix[0] * ((matrix[4] * matrix[8] - matrix[5] * matrix[7]) % 26) +
+            matrix[1] * ((matrix[5] * matrix[6] - matrix[3] * matrix[8]) % 26) +
+            matrix[2] * ((matrix[3] * matrix[7] - matrix[4] * matrix[6]) % 26)
+        ) % 26 + 26) % 26;
+    }
+}
+
+/**
+ * Calculate the modular inverse of a number
+ * @param {number} a - The number
+ * @param {number} m - The modulus
+ * @returns {number} The inverse
+ */
+function modInverse(a, m = 26) {
+    a = ((a % m) + m) % m;
+    for (let x = 1; x < m; x++) {
+        if ((a * x) % m === 1) {
+            return x;
+        }
+    }
+    return null;
+}
+
+/**
+ * Calculate the inverse of a matrix
+ * @param {Array} matrix - The matrix
+ * @param {number} size - The size of the matrix
+ * @returns {Array} The inverse
+ */
+function calculateInverseMatrix(matrix, size) {
+    const det = calculateDeterminant(matrix, size);
+    const detInverse = modInverse(det);
+    
+    if (detInverse === null) {
+        throw new Error('Matrix is not invertible (determinant has no inverse modulo 26)');
+    }
+    
+    if (size === 2) {
+        return [
+            (matrix[3] * detInverse) % 26,
+            (-matrix[1] * detInverse + 26) % 26,
+            (-matrix[2] * detInverse + 26) % 26,
+            (matrix[0] * detInverse) % 26
+        ];
+    }
+    
+    if (size === 3) {
+        const cofactors = [
+            // First row
+            ((matrix[4] * matrix[8] - matrix[5] * matrix[7]) % 26 + 26) % 26,
+            ((matrix[5] * matrix[6] - matrix[3] * matrix[8]) % 26 + 26) % 26,
+            ((matrix[3] * matrix[7] - matrix[4] * matrix[6]) % 26 + 26) % 26,
+            
+            // Second row
+            ((matrix[2] * matrix[7] - matrix[1] * matrix[8]) % 26 + 26) % 26,
+            ((matrix[0] * matrix[8] - matrix[2] * matrix[6]) % 26 + 26) % 26,
+            ((matrix[1] * matrix[6] - matrix[0] * matrix[7]) % 26 + 26) % 26,
+            
+            // Third row
+            ((matrix[1] * matrix[5] - matrix[2] * matrix[4]) % 26 + 26) % 26,
+            ((matrix[2] * matrix[3] - matrix[0] * matrix[5]) % 26 + 26) % 26,
+            ((matrix[0] * matrix[4] - matrix[1] * matrix[3]) % 26 + 26) % 26
+        ];
+        
+        // Transpose the cofactor matrix
+        const adjugate = [
+            cofactors[0], cofactors[3], cofactors[6],
+            cofactors[1], cofactors[4], cofactors[7],
+            cofactors[2], cofactors[5], cofactors[8]
+        ];
+        
+        // Multiply by the determinant inverse
+        return adjugate.map(x => ((x * detInverse) % 26 + 26) % 26);
+    }
+}
+
+/**
+ * Calculate the greatest common divisor of two numbers
+ * @param {number} a - The first number
+ * @param {number} b - The second number
+ * @returns {number} The greatest common divisor
+ */
+function gcd(a, b) {
+    a = Math.abs(a);
+    b = Math.abs(b);
+    while (b) {
+        const t = b;
+        b = a % b;
+        a = t;
+    }
+    return a;
+}
+
+/**
+ * Check if a determinant is valid for Hill cipher
+ * @param {number} det - The determinant
+ * @returns {boolean} True if the determinant is valid, false otherwise
+ */
+function isValidDeterminant(det) {
+    det = ((det % 26) + 26) % 26;
+    return det !== 0 && gcd(det, 26) === 1;
 } 

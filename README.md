@@ -18,6 +18,7 @@ A powerful Chrome extension that provides a comprehensive suite of encoding, dec
 - **JWT**: JSON Web Token encoding/decoding
 - **Caesar Cipher**: Classical shift cipher (default shift: 3)
 - **Vigenère Cipher**: Polyalphabetic substitution cipher using a keyword
+- **Hill Cipher**: Polygraphic substitution cipher using linear algebra
 
 #### Legacy & Special Formats
 - **ROT13**: Simple letter substitution cipher
@@ -115,6 +116,10 @@ For each detected hash, the tool provides:
   * Combines I/J to fit alphabet in matrix
   * Handles special cases (double letters, odd length)
   * Historically significant in military communications
+- Hill Cipher: Polygraphic substitution cipher using linear algebra
+  * Uses a key matrix for encryption/decryption
+  * Operates on blocks of letters
+  * Strong against frequency analysis
 
 ### Hash Detection Algorithm
 - Pattern matching using regular expressions
