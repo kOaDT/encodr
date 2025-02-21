@@ -10,11 +10,11 @@ A powerful Chrome extension that provides a comprehensive suite of encoding, dec
 
 #### Common Formats
 - **Base64**: Standard base64 encoding/decoding
+- **Base32**: RFC 4648 compliant Base32 encoding
 - **URL Encoding**: Encode/decode URLs and URI components
 - **HTML Entities**: Convert special characters to/from HTML entities
 
 #### Cryptographic Formats
-- **Base32**: RFC 4648 compliant Base32 encoding
 - **JWT**: JSON Web Token encoding/decoding
 - **Caesar Cipher**: Classical shift cipher (default shift: 3)
 - **Vigenère Cipher**: Polyalphabetic substitution cipher using a keyword
