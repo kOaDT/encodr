@@ -23,8 +23,19 @@ document.addEventListener('DOMContentLoaded', () => {
     `;
     jwtOptions.parentNode.insertBefore(vigenereOptions, jwtOptions.nextSibling);
 
+    // Add Playfair key input handling
+    const playfairOptions = document.createElement('div');
+    playfairOptions.id = 'playfairOptions';
+    playfairOptions.style.display = 'none';
+    playfairOptions.innerHTML = `
+        <input type="text" id="playfairKey" placeholder="Enter Playfair key...">
+    `;
+    jwtOptions.parentNode.insertBefore(playfairOptions, jwtOptions.nextSibling);
+
     encodingType.addEventListener('change', function() {
         jwtOptions.style.display = this.value === 'jwt' ? 'block' : 'none';
+        vigenereOptions.style.display = this.value === 'vigenere' ? 'block' : 'none';
+        playfairOptions.style.display = this.value === 'playfair' ? 'block' : 'none';
         
         if (this.value === 'hash-detect') {
             encodeDecodeButtons.style.display = 'none';
@@ -33,8 +44,6 @@ document.addEventListener('DOMContentLoaded', () => {
             encodeDecodeButtons.style.display = 'block';
             detectHashButton.style.display = 'none';
         }
-
-        vigenereOptions.style.display = this.value === 'vigenere' ? 'block' : 'none';
     });
 
     document.getElementById('encodeButton').addEventListener('click', async () => {
@@ -76,6 +85,14 @@ document.addEventListener('DOMContentLoaded', () => {
                     throw new EncodrError('Key is required for Vigenère cipher', 'warning');
                 }
                 output.value = encodingFunctions.vigenere.encode(inputValue, keyElement.value);
+                showNotification('Successfully encoded', 'success');
+            } else if (type === 'playfair') {
+                const keyElement = document.getElementById('playfairKey');
+                if (!keyElement.value.trim()) {
+                    keyElement.classList.add('input-error');
+                    throw new EncodrError('Key is required for Playfair cipher', 'warning');
+                }
+                output.value = encodingFunctions.playfair.encode(inputValue, keyElement.value);
                 showNotification('Successfully encoded', 'success');
             } else {
                 output.value = encodingFunctions[type].encode(inputValue);
@@ -121,6 +138,14 @@ document.addEventListener('DOMContentLoaded', () => {
                     throw new EncodrError('Key is required for Vigenère cipher', 'warning');
                 }
                 output.value = encodingFunctions.vigenere.decode(inputElement.value, keyElement.value);
+                showNotification('Successfully decoded', 'success');
+            } else if (type === 'playfair') {
+                const keyElement = document.getElementById('playfairKey');
+                if (!keyElement.value.trim()) {
+                    keyElement.classList.add('input-error');
+                    throw new EncodrError('Key is required for Playfair cipher', 'warning');
+                }
+                output.value = encodingFunctions.playfair.decode(inputElement.value, keyElement.value);
                 showNotification('Successfully decoded', 'success');
             } else {
                 output.value = encodingFunctions[type].decode(inputElement.value);

@@ -25,6 +25,9 @@ A powerful Chrome extension that provides a comprehensive suite of encoding, dec
 - **Binary**: Text to binary conversion
 - **Morse Code**: International Morse Code conversion
 - **Hexadecimal**: Text to hex conversion
+- **Playfair Cipher**: Historical digraph substitution cipher
+  - Invented in 1854 by Charles Wheatstone
+  - Used by British forces in both World Wars
 
 ### Hash Detection & Analysis
 Automatically detect and analyze various hash formats:
@@ -107,6 +110,11 @@ For each detected hash, the tool provides:
 - Caesar Cipher: Customizable shift parameter (default: 3)
 - Vigenère Cipher: Polyalphabetic substitution using a keyword
 - ASCII85: Adobe-style ASCII85 encoding
+- Playfair Cipher: Classical digraph substitution cipher
+  * Uses 5x5 matrix derived from keyword
+  * Combines I/J to fit alphabet in matrix
+  * Handles special cases (double letters, odd length)
+  * Historically significant in military communications
 
 ### Hash Detection Algorithm
 - Pattern matching using regular expressions

@@ -582,5 +582,116 @@ export const encodingFunctions = {
                 return String.fromCharCode(shiftedCode);
             });
         }
+    },
+
+    // Playfair cipher: A digraph substitution cipher using a 5x5 key matrix
+    // - Uses a 5x5 matrix of letters (combining I/J) based on a keyword
+    // - Encrypts pairs of letters (digraphs) according to their position in the matrix
+    // - Rules: 
+    //   * Same row: letters are replaced by letters to their right (wrapping around)
+    //   * Same column: letters are replaced by letters below them (wrapping around)
+    //   * Different row/column: letters are replaced by letters at the corners of the rectangle they form
+    // - Special cases:
+    //   * J is replaced by I (to fit alphabet in 5x5 grid)
+    //   * Double letters are separated by 'X'
+    //   * Odd-length messages are padded with 'X'
+    playfair: {
+        encode: (text, key) => {
+            if (!key) throw new Error('Encryption key is required for Playfair cipher');
+            
+            key = validateInput(key, {
+                allowedChars: 'A-Za-z',
+                type: 'playfair-key'
+            }).toUpperCase().replace(/J/g, 'I').replace(/[^A-Z]/g, '');
+
+            if (key.length === 0) {
+                throw new Error('Key must contain at least one letter');
+            }
+
+            // Prepare the text: remove non-letters, convert to uppercase, replace J with I
+            text = text.toUpperCase()
+                      .replace(/J/g, 'I')
+                      .replace(/[^A-Z]/g, '')
+                      .replace(/(.)(.)?\b/g, (m, p1, p2) => p2 ? p1 + p2 : p1 + 'X');
+
+            // Create the Playfair matrix
+            const matrix = createPlayfairMatrix(key);
+
+            // Encode pairs of letters
+            return text.match(/.{2}/g).map(pair => {
+                const [row1, col1] = findInMatrix(matrix, pair[0]);
+                const [row2, col2] = findInMatrix(matrix, pair[1]);
+
+                if (row1 === row2) { // Same row
+                    return matrix[row1][(col1 + 1) % 5] + matrix[row2][(col2 + 1) % 5];
+                } else if (col1 === col2) { // Same column
+                    return matrix[(row1 + 1) % 5][col1] + matrix[(row2 + 1) % 5][col2];
+                } else { // Rectangle
+                    return matrix[row1][col2] + matrix[row2][col1];
+                }
+            }).join('');
+        },
+        decode: (text, key) => {
+            if (!key) throw new Error('Decryption key is required for Playfair cipher');
+            
+            key = validateInput(key, {
+                allowedChars: 'A-Za-z',
+                type: 'playfair-key'
+            }).toUpperCase().replace(/J/g, 'I').replace(/[^A-Z]/g, '');
+
+            if (key.length === 0) {
+                throw new Error('Key must contain at least one letter');
+            }
+
+            // Prepare the text
+            text = text.toUpperCase().replace(/[^A-Z]/g, '');
+            if (text.length % 2 !== 0) {
+                throw new Error('Invalid Playfair cipher text (must be even length)');
+            }
+
+            // Create the Playfair matrix
+            const matrix = createPlayfairMatrix(key);
+
+            // Decode pairs of letters
+            return text.match(/.{2}/g).map(pair => {
+                const [row1, col1] = findInMatrix(matrix, pair[0]);
+                const [row2, col2] = findInMatrix(matrix, pair[1]);
+
+                if (row1 === row2) { // Same row
+                    return matrix[row1][(col1 + 4) % 5] + matrix[row2][(col2 + 4) % 5];
+                } else if (col1 === col2) { // Same column
+                    return matrix[(row1 + 4) % 5][col1] + matrix[(row2 + 4) % 5][col2];
+                } else { // Rectangle
+                    return matrix[row1][col2] + matrix[row2][col1];
+                }
+            }).join('').replace(/X$/, '');
+        }
     }
-}; 
+};
+
+// Helper functions for Playfair cipher
+function createPlayfairMatrix(key) {
+    // Create initial alphabet (without J)
+    const alphabet = 'ABCDEFGHIKLMNOPQRSTUVWXYZ';
+    
+    // Remove duplicates from key and combine with remaining alphabet
+    const uniqueChars = [...new Set(key + alphabet)];
+    
+    // Create 5x5 matrix
+    const matrix = [];
+    for (let i = 0; i < 5; i++) {
+        matrix[i] = uniqueChars.slice(i * 5, (i + 1) * 5);
+    }
+    return matrix;
+}
+
+function findInMatrix(matrix, char) {
+    for (let i = 0; i < 5; i++) {
+        for (let j = 0; j < 5; j++) {
+            if (matrix[i][j] === char) {
+                return [i, j];
+            }
+        }
+    }
+    return [0, 0]; // Should never happen with valid input
+} 
