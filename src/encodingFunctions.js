@@ -30,7 +30,78 @@ function validateInput(text, options = {}) {
     return text;
 }
 
+const BASE45_CHARSET = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ $%*+-./:";
+
 export const encodingFunctions = {
+    // Base45 encoding: Converts binary data to a compact, human-readable format using a 45-character alphabet
+    // Each character represents 4.5 bits of data, making it more compact than Base64
+    // Used in EU COVID Cert
+    base45: {
+        encode: (text) => {
+            // Convert string to Uint8Array
+            const data = new TextEncoder().encode(text);
+            let result = '';
+            
+            // Process pairs of bytes
+            for (let i = 0; i < data.length; i += 2) {
+                if (i + 1 < data.length) {
+                    // Process two bytes
+                    const x = (data[i] << 8) + data[i + 1];
+                    // Convert to base45 (3 digits)
+                    const e = x % 45;
+                    const d = ((x - e) / 45) % 45;
+                    const c = ((x - e - d * 45) / 2025);
+                    result += BASE45_CHARSET[c] + BASE45_CHARSET[d] + BASE45_CHARSET[e];
+                } else {
+                    // Process single byte
+                    const x = data[i];
+                    const d = x % 45;
+                    const c = ((x - d) / 45);
+                    result += BASE45_CHARSET[c] + BASE45_CHARSET[d];
+                }
+            }
+            return result;
+        },
+        
+        decode: (text) => {
+            if (!text.match(/^[0-9A-Z $%*+\-./:]+$/)) {
+                throw new EncodrError('Invalid Base45 string', 'error');
+            }
+    
+            const result = [];
+            
+            // Process triplets of characters
+            for (let i = 0; i < text.length; i += 3) {
+                if (i + 2 < text.length) {
+                    // Process three characters (two bytes)
+                    const c = BASE45_CHARSET.indexOf(text[i]);
+                    const d = BASE45_CHARSET.indexOf(text[i + 1]);
+                    const e = BASE45_CHARSET.indexOf(text[i + 2]);
+                    
+                    if (c === -1 || d === -1 || e === -1) {
+                        throw new EncodrError('Invalid Base45 character', 'error');
+                    }
+                    
+                    const x = c * 2025 + d * 45 + e;
+                    result.push((x >> 8) & 255, x & 255);
+                } else if (i + 1 < text.length) {
+                    // Process two characters (one byte)
+                    const c = BASE45_CHARSET.indexOf(text[i]);
+                    const d = BASE45_CHARSET.indexOf(text[i + 1]);
+                    
+                    if (c === -1 || d === -1) {
+                        throw new EncodrError('Invalid Base45 character', 'error');
+                    }
+                    
+                    const x = c * 45 + d;
+                    result.push(x);
+                }
+            }
+            
+            // Convert byte array back to string
+            return new TextDecoder().decode(new Uint8Array(result));
+        }
+    },
     // Base64 encoding: Converts binary data to a string format using 64 characters (A-Z, a-z, 0-9, +, /)
     // Uses built-in btoa/atob functions for encoding/decoding
     base64: {
