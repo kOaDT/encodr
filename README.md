@@ -10,6 +10,7 @@ A powerful Chrome extension that provides a comprehensive suite of encoding, dec
 
 #### Common Formats
 - **Base64**: Standard base64 encoding/decoding
+- **Base58**: Used in Bitcoin to represent large numbers in a compact, human-readable format, using a 58-character alphabet
 - **Base32**: RFC 4648 compliant Base32 encoding
 - **URL Encoding**: Encode/decode URLs and URI components
 - **HTML Entities**: Convert special characters to/from HTML entities
@@ -106,6 +107,7 @@ For each detected hash, the tool provides:
 
 ### Encoding Implementations
 - Base64: Standard btoa/atob implementation
+- Base58: 58-character alphabet, omitting easily confused characters like 0, O, I, and l
 - Base32: RFC 4648 compliant implementation
 - JWT: Basic JWT structure with header and payload
 - Caesar Cipher: Customizable shift parameter (default: 3)

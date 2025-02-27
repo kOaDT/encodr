@@ -745,7 +745,75 @@ export const encodingFunctions = {
             
             return result;
         }
-    }
+    },
+
+    // Base58 encoding: Used for Bitcoin addresses and other cryptocurrencies
+    // Alphabet excludes similar-looking characters: 0OIl to prevent visual ambiguity
+    base58: {
+        encode: (text) => {
+            text = validateInput(text);
+            const ALPHABET = '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz';
+            const BASE = ALPHABET.length;
+            
+            // Convert text to bytes
+            const bytes = new TextEncoder().encode(text);
+            
+            // Convert to big number
+            let num = 0n;
+            for (let i = 0; i < bytes.length; i++) {
+                num = num * 256n + BigInt(bytes[i]);
+            }
+            
+            // Convert to base58
+            let encoded = '';
+            while (num > 0n) {
+                const remainder = Number(num % BigInt(BASE));
+                encoded = ALPHABET[remainder] + encoded;
+                num = num / BigInt(BASE);
+            }
+            
+            // Add leading zeros
+            for (let i = 0; i < bytes.length && bytes[i] === 0; i++) {
+                encoded = ALPHABET[0] + encoded;
+            }
+            
+            return encoded;
+        },
+        decode: (text) => {
+            text = validateInput(text, {
+                allowedChars: '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz',
+                type: 'base58'
+            });
+            
+            const ALPHABET = '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz';
+            const BASE = ALPHABET.length;
+            
+            // Convert from base58
+            let num = 0n;
+            for (let i = 0; i < text.length; i++) {
+                const char = text[i];
+                const value = ALPHABET.indexOf(char);
+                if (value === -1) {
+                    throw new Error('Invalid Base58 character: ' + char);
+                }
+                num = num * BigInt(BASE) + BigInt(value);
+            }
+            
+            // Convert to bytes
+            let bytes = [];
+            while (num > 0n) {
+                bytes.unshift(Number(num % 256n));
+                num = num / 256n;
+            }
+            
+            // Add leading zeros
+            for (let i = 0; i < text.length && text[i] === ALPHABET[0]; i++) {
+                bytes.unshift(0);
+            }
+            
+            return new TextDecoder().decode(new Uint8Array(bytes));
+        }
+    },
 };
 
 
