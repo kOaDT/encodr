@@ -46,6 +46,12 @@ Encodr is a powerful, privacy-focused Chrome extension that brings professional-
   - Example: `Hello` → `96%DV 2L`
 - **Base32** - RFC 4648 compliant encoding
   - Example: `Hello` → `JBSWY3DP`
+- **Hexadecimal** - Base-16 representation of binary data
+  - Example: `Hello` → `48656c6c6f`
+- **Binary** - Base-2 representation of data
+  - Example: `Hello` → `01001000 01100101 01101100 01101100 01101111`
+- **Morse Code** - Telegraph communication system using dots and dashes
+  - Example: `Hello` → `.... . .-.. .-.. ---`
 - **URL Encoding** - For URLs and URI components
   - Example: `Hello World` → `Hello%20World`
 - **HTML Entities** - Special character conversion
