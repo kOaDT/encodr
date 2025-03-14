@@ -1066,6 +1066,260 @@ export const encodingFunctions = {
             return result;
         }
     },
+
+    // Punycode: Encoding system used for Internationalized Domain Names (IDN)
+    // Converts Unicode characters to ASCII for domain names (RFC 3492)
+    punycode: {
+        // Constants for Punycode algorithm
+        BASE: 36,
+        TMIN: 1,
+        TMAX: 26,
+        SKEW: 38,
+        DAMP: 700,
+        INITIAL_BIAS: 72,
+        INITIAL_N: 128,
+        DELIMITER: '-',
+        
+        // Encode a string to Punycode
+        encode: (text) => {
+            validateInput(text);
+            
+            // Check if the string is already ASCII-only
+            if (/^[\x00-\x7F]*$/.test(text)) {
+                return text;
+            }
+            
+            // For domain names, handle each label separately
+            if (text.includes('.')) {
+                const labels = text.split('.');
+                return labels.map(label => {
+                    // If the label contains non-ASCII, encode it with xn-- prefix
+                    if (/[^\x00-\x7F]/.test(label)) {
+                        return 'xn--' + encodingFunctions.punycode._encodePart(label);
+                    }
+                    return label;
+                }).join('.');
+            }
+            
+            // For a single label/string
+            return encodingFunctions.punycode._encodePart(text);
+        },
+        
+        // Internal function to encode a single part
+        _encodePart: (text) => {
+            const output = [];
+            
+            // Find the basic code points (ASCII) and copy them to output
+            let n = encodingFunctions.punycode.INITIAL_N;
+            let delta = 0;
+            let bias = encodingFunctions.punycode.INITIAL_BIAS;
+            
+            // Copy all ASCII chars to output
+            const basicChars = [];
+            for (let i = 0; i < text.length; i++) {
+                const codePoint = text.codePointAt(i);
+                if (codePoint < 128) {
+                    basicChars.push(text[i]);
+                }
+            }
+            
+            let h = basicChars.length;
+            let b = h;
+            
+            // Add delimiter if there are basic code points
+            if (b > 0) {
+                output.push(encodingFunctions.punycode.DELIMITER);
+            }
+            
+            // Main encoding loop
+            while (h < text.length) {
+                // Find the next smallest code point >= n
+                let m = Number.MAX_SAFE_INTEGER;
+                for (let i = 0; i < text.length; i++) {
+                    const codePoint = text.codePointAt(i);
+                    if (codePoint >= n && codePoint < m) {
+                        m = codePoint;
+                    }
+                }
+                
+                // Increase delta and update n
+                delta += (m - n) * (h + 1);
+                n = m;
+                
+                // Process all code points < m
+                for (let i = 0; i < text.length; i++) {
+                    const codePoint = text.codePointAt(i);
+                    
+                    if (codePoint < n) {
+                        delta++;
+                    }
+                    
+                    if (codePoint === n) {
+                        // Represent delta in the variable-length integer
+                        let q = delta;
+                        let k = encodingFunctions.punycode.BASE;
+                        
+                        while (true) {
+                            const t = k <= bias ? encodingFunctions.punycode.TMIN :
+                                    k >= bias + encodingFunctions.punycode.TMAX ? encodingFunctions.punycode.TMAX :
+                                    k - bias;
+                            
+                            if (q < t) break;
+                            
+                            const qMinusT = q - t;
+                            const baseMinusT = encodingFunctions.punycode.BASE - t;
+                            
+                            output.push(String.fromCodePoint(
+                                encodingFunctions.punycode._digitToCodePoint(t + (qMinusT % baseMinusT))
+                            ));
+                            
+                            q = Math.floor(qMinusT / baseMinusT);
+                            k += encodingFunctions.punycode.BASE;
+                        }
+                        
+                        output.push(String.fromCodePoint(
+                            encodingFunctions.punycode._digitToCodePoint(q)
+                        ));
+                        
+                        // Adapt bias
+                        bias = encodingFunctions.punycode._adapt(
+                            delta, h + 1, h === b
+                        );
+                        delta = 0;
+                        h++;
+                    }
+                }
+                
+                delta++;
+                n++;
+            }
+            
+            return basicChars.join('') + output.join('');
+        },
+        
+        // Decode a Punycode string
+        decode: (text) => {
+            validateInput(text);
+            
+            // For domain names, handle each label separately
+            if (text.includes('.')) {
+                const labels = text.split('.');
+                return labels.map(label => {
+                    // If the label has the xn-- prefix, decode it
+                    if (label.startsWith('xn--')) {
+                        return encodingFunctions.punycode._decodePart(label.slice(4));
+                    }
+                    return label;
+                }).join('.');
+            }
+            
+            // For a single label/string
+            return encodingFunctions.punycode._decodePart(text);
+        },
+        
+        // Internal function to decode a single part
+        _decodePart: (text) => {
+            // Find the last delimiter
+            const delimiterPos = text.lastIndexOf(encodingFunctions.punycode.DELIMITER);
+            
+            // Extract basic code points
+            const basicChars = delimiterPos === -1 ? '' : text.slice(0, delimiterPos);
+            
+            // Initialize variables
+            let n = encodingFunctions.punycode.INITIAL_N;
+            let i = 0;
+            let bias = encodingFunctions.punycode.INITIAL_BIAS;
+            let output = [...basicChars];
+            
+            // Start from after the last delimiter
+            const inputPart = delimiterPos === -1 ? text : text.slice(delimiterPos + 1);
+            
+            // Main decoding loop
+            let index = 0;
+            while (index < inputPart.length) {
+                const oldi = i;
+                let w = 1;
+                let k = encodingFunctions.punycode.BASE;
+                
+                // Decode the variable-length integer
+                while (true) {
+                    if (index >= inputPart.length) {
+                        throw new Error('Invalid Punycode string');
+                    }
+                    
+                    const digit = encodingFunctions.punycode._codePointToDigit(
+                        inputPart.codePointAt(index++)
+                    );
+                    
+                    if (digit >= encodingFunctions.punycode.BASE) {
+                        throw new Error('Invalid Punycode string');
+                    }
+                    
+                    i += digit * w;
+                    
+                    const t = k <= bias ? encodingFunctions.punycode.TMIN :
+                              k >= bias + encodingFunctions.punycode.TMAX ? encodingFunctions.punycode.TMAX :
+                              k - bias;
+                    
+                    if (digit < t) break;
+                    
+                    w *= encodingFunctions.punycode.BASE - t;
+                    k += encodingFunctions.punycode.BASE;
+                }
+                
+                // Adapt bias
+                bias = encodingFunctions.punycode._adapt(i - oldi, output.length + 1, oldi === 0);
+                
+                // i now represents the next code point to insert
+                n += Math.floor(i / (output.length + 1));
+                i %= (output.length + 1);
+                
+                // Insert the decoded character
+                output.splice(i, 0, String.fromCodePoint(n));
+                i++;
+            }
+            
+            return output.join('');
+        },
+        
+        // Convert a digit to a code point
+        _digitToCodePoint: (digit) => {
+            if (digit < 26) {
+                // 0..25 => 'a'..'z'
+                return digit + 97;
+            } else {
+                // 26..35 => '0'..'9'
+                return digit - 26 + 48;
+            }
+        },
+        
+        // Convert a code point to a digit
+        _codePointToDigit: (codePoint) => {
+            if (codePoint >= 48 && codePoint <= 57) {
+                // '0'..'9' => 26..35
+                return codePoint - 48 + 26;
+            } else if (codePoint >= 97 && codePoint <= 122) {
+                // 'a'..'z' => 0..25
+                return codePoint - 97;
+            } else {
+                return encodingFunctions.punycode.BASE; // Invalid
+            }
+        },
+        
+        // Adapt the bias
+        _adapt: (delta, numPoints, firstTime) => {
+            delta = firstTime ? Math.floor(delta / encodingFunctions.punycode.DAMP) : Math.floor(delta / 2);
+            delta += Math.floor(delta / numPoints);
+            
+            let k = 0;
+            while (delta > ((encodingFunctions.punycode.BASE - encodingFunctions.punycode.TMIN) * encodingFunctions.punycode.TMAX) / 2) {
+                delta = Math.floor(delta / (encodingFunctions.punycode.BASE - encodingFunctions.punycode.TMIN));
+                k += encodingFunctions.punycode.BASE;
+            }
+            
+            return k + Math.floor(((encodingFunctions.punycode.BASE - encodingFunctions.punycode.TMIN + 1) * delta) / (delta + encodingFunctions.punycode.SKEW));
+        }
+    },
 };
 
 
