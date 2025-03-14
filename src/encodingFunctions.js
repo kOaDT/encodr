@@ -885,6 +885,187 @@ export const encodingFunctions = {
             return new TextDecoder().decode(new Uint8Array(bytes));
         }
     },
+
+    // ADFGVX cipher: German WWI field cipher combining substitution and transposition
+    // - Uses a 6x6 grid with coordinates labeled A, D, F, G, V, X
+    // - Requires a key for the transposition step
+    // - Historically used for radio communications in World War I
+    adfgvx: {
+        encode: (text, key) => {
+            if (!key) throw new Error('Encryption key is required for ADFGVX cipher');
+            
+            key = validateInput(key, {
+                allowedChars: 'A-Za-z',
+                type: 'adfgvx-key'
+            });
+    
+            // Convert key to uppercase and remove non-alphabetic characters
+            key = key.toUpperCase().replace(/[^A-Z]/g, '');
+            if (key.length === 0) {
+                throw new Error('Key must contain at least one letter');
+            }
+    
+            // Prepare the input text: convert to uppercase, remove spaces and special characters
+            text = text.toUpperCase().replace(/[^A-Z0-9]/g, '');
+            
+            // Create the polybius square with a mixed alphabet
+            const alphabet = "KZROUQHYFSAXWMGPBVTDNLCIJE0123456789";
+            const labels = "ADFGVX";
+            const square = [];
+            
+            for (let i = 0; i < 6; i++) {
+                square[i] = [];
+                for (let j = 0; j < 6; j++) {
+                    square[i][j] = alphabet[i * 6 + j];
+                }
+            }
+            
+            // Step 1: Substitution - replace each character with its coordinates
+            let substituted = '';
+            for (let i = 0; i < text.length; i++) {
+                const char = text[i];
+                let found = false;
+                
+                // Find the character in the square
+                for (let row = 0; row < 6 && !found; row++) {
+                    for (let col = 0; col < 6 && !found; col++) {
+                        if (square[row][col] === char) {
+                            // Add the coordinates using the ADFGVX labels
+                            substituted += labels[row] + labels[col];
+                            found = true;
+                        }
+                    }
+                }
+                
+                // If character not found in the square, skip it
+                if (!found) {
+                    continue;
+                }
+            }
+            
+            // Step 2: Transposition using the key
+            // Create a grid with the key as column headers
+            const grid = [];
+            const keyArray = [...key];
+            
+            // Fill the grid with the substituted text
+            let row = 0;
+            for (let i = 0; i < substituted.length; i += keyArray.length) {
+                grid[row] = [];
+                for (let j = 0; j < keyArray.length; j++) {
+                    grid[row][j] = i + j < substituted.length ? substituted[i + j] : '';
+                }
+                row++;
+            }
+            
+            // Create a mapping of key positions
+            const keyPositions = keyArray.map((char, index) => ({ char, index }))
+                                        .sort((a, b) => a.char.localeCompare(b.char));
+            
+            // Read off the columns in alphabetical order of the key
+            let result = '';
+            for (const { index } of keyPositions) {
+                for (let i = 0; i < grid.length; i++) {
+                    if (grid[i][index]) {
+                        result += grid[i][index];
+                    }
+                }
+            }
+            
+            return result;
+        },
+        
+        decode: (text, key) => {
+            if (!key) throw new Error('Decryption key is required for ADFGVX cipher');
+            
+            key = validateInput(key, {
+                allowedChars: 'A-Za-z',
+                type: 'adfgvx-key'
+            });
+    
+            // Convert key to uppercase and remove non-alphabetic characters
+            key = key.toUpperCase().replace(/[^A-Z]/g, '');
+            if (key.length === 0) {
+                throw new Error('Key must contain at least one letter');
+            }
+    
+            // Validate the ciphertext - should only contain A, D, F, G, V, X
+            text = text.toUpperCase();
+            if (!text.match(/^[ADFGVX]+$/)) {
+                throw new Error('Invalid ADFGVX ciphertext (should only contain A, D, F, G, V, X)');
+            }
+            
+            // Create the polybius square with the same mixed alphabet as in encoding
+            const alphabet = "KZROUQHYFSAXWMGPBVTDNLCIJE0123456789";
+            const labels = "ADFGVX";
+            const square = [];
+            
+            for (let i = 0; i < 6; i++) {
+                square[i] = [];
+                for (let j = 0; j < 6; j++) {
+                    square[i][j] = alphabet[i * 6 + j];
+                }
+            }
+            
+            // Step 1: Reverse the transposition
+            const keyArray = [...key];
+            const numCols = keyArray.length;
+            const numRows = Math.ceil(text.length / numCols);
+            
+            // Create a mapping of key positions
+            const keyPositions = keyArray.map((char, index) => ({ char, index }))
+                                        .sort((a, b) => a.char.localeCompare(b.char));
+            
+            // Calculate column lengths
+            const colLengths = [];
+            for (let i = 0; i < numCols; i++) {
+                colLengths[i] = Math.floor(text.length / numCols) + (i < text.length % numCols ? 1 : 0);
+            }
+            
+            // Distribute the ciphertext among the columns
+            const columns = [];
+            let pos = 0;
+            
+            for (const { index } of keyPositions) {
+                columns[index] = text.substr(pos, colLengths[index]);
+                pos += colLengths[index];
+            }
+            
+            // Reconstruct the original grid
+            let grid = [];
+            for (let i = 0; i < numRows; i++) {
+                grid[i] = [];
+                for (let j = 0; j < numCols; j++) {
+                    grid[i][j] = i < columns[j].length ? columns[j][i] : '';
+                }
+            }
+            
+            // Read the grid row by row to get the substituted text
+            let substituted = '';
+            for (let i = 0; i < grid.length; i++) {
+                for (let j = 0; j < grid[i].length; j++) {
+                    if (grid[i][j]) {
+                        substituted += grid[i][j];
+                    }
+                }
+            }
+            
+            // Step 2: Reverse the substitution
+            let result = '';
+            for (let i = 0; i < substituted.length; i += 2) {
+                if (i + 1 >= substituted.length) break;
+                
+                const row = labels.indexOf(substituted[i]);
+                const col = labels.indexOf(substituted[i + 1]);
+                
+                if (row !== -1 && col !== -1) {
+                    result += square[row][col];
+                }
+            }
+            
+            return result;
+        }
+    },
 };
 
 

@@ -1,170 +1,153 @@
-# Encodr Chrome Extension
+# Encodr
 
-A powerful Chrome extension that provides a comprehensive suite of encoding, decoding, and hash analysis tools, all within your browser. Convert text between various formats with a clean, modern interface.
+> A powerful Chrome extension providing comprehensive encoding, decoding, and hash analysis tools directly in your browser.
 
 ![Extension Screenshot](images/screenshot.png)
 
-## Features
+[![Chrome Web Store](https://img.shields.io/chrome-web-store/v/mbmknbmpajagofnlcaoajkgammegbblg.svg)](https://chromewebstore.google.com/detail/base64-converter/mbmknbmpajagofnlcaoajkgammegbblg)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
-### Comprehensive Encoding Methods
+## 🚀 Features
 
-#### Common Formats
+### 🔄 Encoding & Decoding
+
+<details>
+<summary><strong>Common Formats</strong></summary>
+
 - **Base64**: Standard base64 encoding/decoding
-- **Base58**: Used in Bitcoin to represent large numbers in a compact, human-readable format, using a 58-character alphabet
-- **Base45**: Binary-to-text encoding scheme used in COVID-19 digital certificates
-- **Base32**: RFC 4648 compliant Base32 encoding
-- **URL Encoding**: Encode/decode URLs and URI components
-- **HTML Entities**: Convert special characters to/from HTML entities
+- **Base58**: Bitcoin-style compact format (58-character alphabet)
+- **Base45**: Used in COVID-19 digital certificates
+- **Base32**: RFC 4648 compliant encoding
+- **URL Encoding**: For URLs and URI components
+- **HTML Entities**: Special character conversion
+</details>
 
-#### Cryptographic Formats
+<details>
+<summary><strong>Cryptographic Formats</strong></summary>
+
 - **JWT**: JSON Web Token encoding/decoding
-- **Caesar Cipher**: Classical shift cipher (default shift: 3)
-- **Vigenère Cipher**: Polyalphabetic substitution cipher using a keyword
-- **Hill Cipher**: Polygraphic substitution cipher using linear algebra
+- **Caesar Cipher**: Classical shift cipher (default: 3)
+- **Vigenère Cipher**: Polyalphabetic substitution with keyword
+- **Hill Cipher**: Matrix-based polygraphic substitution
+- **ADFGVX Cipher**: WWI German military cipher
+  - Combined substitution and transposition
+  - 6×6 grid with A, D, F, G, V, X coordinates
+  - Designed for Morse code distinctiveness (1918)
+</details>
 
-#### Legacy & Special Formats
-- **ROT13**: Simple letter substitution cipher
-- **ASCII85**: Compact encoding used in PostScript
-- **Binary**: Text to binary conversion
-- **Morse Code**: International Morse Code conversion
-- **Hexadecimal**: Text to hex conversion
-- **Playfair Cipher**: Historical digraph substitution cipher
-  - Invented in 1854 by Charles Wheatstone
-  - Used by British forces in both World Wars
+<details>
+<summary><strong>Legacy & Special Formats</strong></summary>
 
-### Hash Detection & Analysis
-Automatically detect and analyze various hash formats:
-- **MD5**: 32 characters
-- **SHA1**: 40 characters
-- **SHA256**: 64 characters
-- **SHA512**: 128 characters
-- **RIPEMD160**: 40 characters
-- **BCrypt**: Including salt and cost factor
-- **Argon2**: Modern password hashing
-- **NTLM**: Windows authentication
-- **MySQL**: Both v4 and v5 formats
+- **ROT13**: Simple letter substitution
+- **ASCII85**: Compact PostScript encoding
+- **Binary**: Text-to-binary conversion
+- **Morse Code**: International standard
+- **Hexadecimal**: Text-to-hex conversion
+- **Playfair Cipher**: Historical digraph substitution (1854)
+</details>
 
-For each detected hash, the tool provides:
-- Hash type identification
-- Confidence level
+### 🔍 Hash Analysis
+
+Automatically detect and analyze hash formats including:
+- MD5, SHA1, SHA256, SHA512, RIPEMD160
+- BCrypt, Argon2, NTLM, MySQL (v4/v5)
+
+For each hash, receive:
+- Type identification with confidence level
 - Format specifications
 - Technical description
 - Common usage context
 
-### Technical Features
-- Real-time encoding/decoding
-- Intelligent hash format detection
-- Error handling and validation
-- Support for special characters
-- UTF-8 compatibility
-- No external dependencies
-- Offline functionality
+## ⚙️ Technical Highlights
 
-### User Interface
-- Clean, modern dark theme
-- Monospace font (JetBrains Mono)
-- Context-aware controls
-- Dynamic mode switching
-- Copy to clipboard functionality
-- Clear all fields with one click
-- Visual feedback for actions
-- Custom scrollbar design
-- Responsive layout
+- **Privacy-Focused**: All processing happens locally
+- **No Dependencies**: Completely self-contained
+- **Offline Support**: Works without internet
+- **UTF-8 Compatible**: Handles special characters
+- **Real-Time Processing**: Instant results
 
-## Installation
+## 💻 Installation
 
 ### From Chrome Web Store
-1. Visit the [Chrome Web Store](https://chromewebstore.google.com/detail/base64-converter/mbmknbmpajagofnlcaoajkgammegbblg?authuser=0&hl=fr&pli=1)
+
+[![Chrome Web Store](https://img.shields.io/badge/Chrome%20Web%20Store-Add%20to%20Chrome-green)](https://chromewebstore.google.com/detail/base64-converter/mbmknbmpajagofnlcaoajkgammegbblg)
+
+1. Visit the [Chrome Web Store](https://chromewebstore.google.com/detail/base64-converter/mbmknbmpajagofnlcaoajkgammegbblg)
 2. Click "Add to Chrome"
 3. Confirm the installation
 
-### Manual Installation (Developer Mode)
-1. Clone this repository:
-   ```bash
-   git clone https://github.com/kOaDT/encodr.git
-   ```
-2. Open Chrome and navigate to `chrome://extensions/`
-3. Enable "Developer mode" using the toggle in the top-right corner
-4. Click "Load unpacked"
-5. Select the directory containing the extension files
+### Developer Mode
 
-## Usage
+```bash
+# Clone the repository
+git clone https://github.com/kOaDT/encodr.git
 
-1. Click the extension icon in your Chrome toolbar
-2. Select your desired operation from the dropdown menu:
-   - Common encoding formats
-   - Cryptographic formats
-   - Legacy formats
+# Then:
+# 1. Open Chrome and go to chrome://extensions/
+# 2. Enable "Developer mode"
+# 3. Click "Load unpacked"
+# 4. Select the encodr directory
+```
+
+## 🔧 Usage
+
+1. Click the Encodr icon in your Chrome toolbar
+2. Select your desired operation:
+   - Encoding/decoding formats
    - Hash detection
-3. Based on your selection:
-   - For encoding/decoding: Enter text and click respective button
-   - For Vigenère cipher: Enter text and provide an encryption key
-   - For hash detection: Enter hash and click "Detect Hash"
-4. Additional actions:
-   - Use "Copy" to copy the result to your clipboard
-   - Use "Clear" to reset both input and output fields
+3. Enter your text or hash
+4. View results instantly
+5. Use "Copy" to copy results to clipboard
 
-## Technical Details
+## 🧩 Implementation Details
 
-### Encoding Implementations
-- Base64: Standard btoa/atob implementation
-- Base58: 58-character alphabet, omitting easily confused characters like 0, O, I, and l
-- Base45: Transform pairs of bytes into three Base45 digits using a 45-character alphabet, through successive divisions by 45
-- Base32: RFC 4648 compliant implementation
-- JWT: Basic JWT structure with header and payload
-- Caesar Cipher: Customizable shift parameter (default: 3)
-- Vigenère Cipher: Polyalphabetic substitution using a keyword
-- ASCII85: Adobe-style ASCII85 encoding
-- Playfair Cipher: Classical digraph substitution cipher
-  * Uses 5x5 matrix derived from keyword
-  * Combines I/J to fit alphabet in matrix
-  * Handles special cases (double letters, odd length)
-  * Historically significant in military communications
-- Hill Cipher: Polygraphic substitution cipher using linear algebra
-  * Uses a key matrix for encryption/decryption
-  * Operates on blocks of letters
-  * Strong against frequency analysis
+<details>
+<summary><strong>Encoding Algorithms</strong></summary>
 
-### Hash Detection Algorithm
-- Pattern matching using regular expressions
-- Multiple hash format support
-- Probability-based detection
-- Specific format validation
-- Comprehensive hash information
+- **Base64**: Standard btoa/atob implementation
+- **Base58**: 58-character alphabet (omits 0, O, I, l)
+- **Base45**: Byte-pair to triple-digit transformation
+- **JWT**: Header + payload structure
+- **Caesar/Vigenère**: Classical implementation
+- **Playfair**: 5×5 matrix with I/J combined
+- **Hill Cipher**: Matrix-based block operation
+- **ADFGVX**: Two-step process (substitution + transposition)
+</details>
 
-### Security Considerations
-- All processing is done locally in the browser
-- No data is sent to external servers
-- No data persistence between sessions
-- Input validation for all formats
+<details>
+<summary><strong>Hash Detection</strong></summary>
 
-## Browser Compatibility
+- Pattern matching with regular expressions
+- Probability-based format identification
+- Format-specific validation rules
+- Comprehensive metadata display
+</details>
 
-- Google Chrome (Version 88+)
-- Chromium-based browsers:
-  - Microsoft Edge
-  - Brave
-  - Opera
-  - Vivaldi
+## 🌐 Browser Compatibility
 
-## Contributing
+- Google Chrome (v88+)
+- Microsoft Edge (Chromium-based)
+- Brave
+- Opera
+- Vivaldi
 
-Contributions are welcome! Here's how you can help:
+## 🤝 Contributing
+
+Contributions are welcome! To contribute:
 
 1. Fork the repository
-2. Create a new branch (`git checkout -b feature/amazing-feature`)
-3. Make your changes
-4. Commit your changes (`git commit -m 'Add some amazing feature'`)
-5. Push to the branch (`git push origin feature/amazing-feature`)
-6. Open a Pull Request
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add amazing feature'`)
+4. Push to your branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
 
-## License
+## 📄 License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-## Support
+## 🆘 Support
 
-If you encounter any issues or have suggestions:
-1. Check the [Issues](https://github.com/kOaDT/encodr/issues) page
-2. Create a new issue if needed
-3. Provide detailed information about the problem
+Having issues or suggestions?
+
+1. Check existing [Issues](https://github.com/kOaDT/encodr/issues)
+2. Create a new issue with detailed information

@@ -22,6 +22,7 @@
             <option value="vigenere">Vigenere Cipher</option>
             <option value="playfair">Playfair Cipher</option>
             <option value="hill">Hill Cipher</option>
+            <option value="adfgvx">ADFGVX Cipher (WWI)</option>
         </optgroup>
         <optgroup label="Legacy">
             <option value="rot13">ROT13</option>
@@ -37,6 +38,9 @@
             <input type="checkbox" id="jwtVerify">
             Verify signature when decoding
         </label>
+    </div>
+    <div id="adfgvxOptions" style="display: none;">
+        <input type="text" id="adfgvxKey" placeholder="Enter ADFGVX key...">
     </div>
     <textarea id="input" placeholder="Enter text to encode/decode..."></textarea>
     <div id="flexButton">

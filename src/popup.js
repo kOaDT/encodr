@@ -32,6 +32,15 @@ document.addEventListener('DOMContentLoaded', () => {
     `;
     jwtOptions.parentNode.insertBefore(playfairOptions, jwtOptions.nextSibling);
 
+    // Add ADFGVX key input handling
+    const adfgvxOptions = document.createElement('div');
+    adfgvxOptions.id = 'adfgvxOptions';
+    adfgvxOptions.style.display = 'none';
+    adfgvxOptions.innerHTML = `
+        <input type="text" id="adfgvxKey" placeholder="Enter ADFGVX key...">
+    `;
+    jwtOptions.parentNode.insertBefore(adfgvxOptions, jwtOptions.nextSibling);
+
     // Add Hill cipher key input handling
     const hillOptions = document.createElement('div');
     hillOptions.id = 'hillOptions';
@@ -50,6 +59,7 @@ document.addEventListener('DOMContentLoaded', () => {
         jwtOptions.style.display = this.value === 'jwt' ? 'block' : 'none';
         vigenereOptions.style.display = this.value === 'vigenere' ? 'block' : 'none';
         playfairOptions.style.display = this.value === 'playfair' ? 'block' : 'none';
+        adfgvxOptions.style.display = this.value === 'adfgvx' ? 'block' : 'none';
         hillOptions.style.display = this.value === 'hill' ? 'block' : 'none';
         
         if (this.value === 'hash-detect') {
@@ -117,12 +127,22 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
                 output.value = encodingFunctions.playfair.encode(inputValue, keyElement.value);
                 showNotification('Successfully encoded', 'success');
+            } else if (type === 'adfgvx') {
+                const keyElement = document.getElementById('adfgvxKey');                
+                if (!keyElement || !keyElement.value.trim()) {
+                    if (keyElement) keyElement.classList.add('input-error');
+                    throw new EncodrError('Key is required for ADFGVX cipher', 'warning');
+                }
+                output.value = encodingFunctions.adfgvx.encode(inputValue, keyElement.value);
+                showNotification('Successfully encoded with ADFGVX cipher', 'success');
             } else {
                 output.value = encodingFunctions[type].encode(inputValue);
                 showNotification('Successfully encoded', 'success');
             }
         } catch (error) {
-            handleError(error, type === 'hill' ? document.getElementById('hillKey') : type === 'jwt' && !secretElement.value.trim() ? secretElement : inputElement);
+            handleError(error, type === 'hill' ? document.getElementById('hillKey') : 
+                        type === 'adfgvx' ? document.getElementById('adfgvxKey') :
+                        type === 'jwt' && !secretElement.value.trim() ? secretElement : inputElement);
         }
     });
 
@@ -178,12 +198,22 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
                 output.value = encodingFunctions.playfair.decode(inputElement.value, keyElement.value);
                 showNotification('Successfully decoded', 'success');
+            } else if (type === 'adfgvx') {
+                const keyElement = document.getElementById('adfgvxKey');
+                if (!keyElement || !keyElement.value.trim()) {
+                    if (keyElement) keyElement.classList.add('input-error');
+                    throw new EncodrError('Key is required for ADFGVX cipher', 'warning');
+                }
+                output.value = encodingFunctions.adfgvx.decode(inputElement.value, keyElement.value);
+                showNotification('Successfully decoded with ADFGVX cipher', 'success');
             } else {
                 output.value = encodingFunctions[type].decode(inputElement.value);
                 showNotification('Successfully decoded', 'success');
             }
         } catch (error) {
-            handleError(error, type === 'hill' ? document.getElementById('hillKey') : type === 'jwt' && !secretElement.value.trim() ? secretElement : inputElement);
+            handleError(error, type === 'hill' ? document.getElementById('hillKey') : 
+                        type === 'adfgvx' ? document.getElementById('adfgvxKey') :
+                        type === 'jwt' && !secretElement.value.trim() ? secretElement : inputElement);
         }
     });
 
