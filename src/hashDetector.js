@@ -45,7 +45,15 @@ export const hashPatterns = {
 
     // MySQL5: Current MySQL password hashing method
     // Uses SHA1 with specific formatting
-    MySQL5: /^\*[A-F0-9]{40}$/
+    MySQL5: /^\*[A-F0-9]{40}$/i,
+
+    // BLAKE2b: 512-bit hash function, outputs 128 hex characters
+    // High-performance cryptographic hash function, successor to BLAKE
+    BLAKE2b: /^[a-f0-9]{128}$/i,
+
+    // BLAKE2s: 256-bit hash function, outputs 64 hex characters
+    // Optimized for 8- to 32-bit platforms
+    BLAKE2s: /^[a-f0-9]{64}$/i,
 };
 
 export function detectHashType(hash) {
@@ -96,7 +104,9 @@ export function getHashFormat(hashType) {
         Argon2id: '$argon2id$v=[version]$m=[memory],t=[iterations],p=[parallelism]$[salt]$[hash]',
         NTLM: '32 characters hexadecimal',
         MySQL4: '16 characters hexadecimal',
-        MySQL5: '* + 40 characters hexadecimal'
+        MySQL5: '* + 40 characters hexadecimal',
+        BLAKE2b: '128 characters hexadecimal',
+        BLAKE2s: '64 characters hexadecimal'
     };
     return formats[hashType] || 'Unknown format';
 }
@@ -113,7 +123,9 @@ export function getHashDescription(hashType) {
         Argon2id: 'Hybrid password hashing combining Argon2i and Argon2d features',
         NTLM: 'Microsoft Windows password hash',
         MySQL4: 'Deprecated MySQL password hash',
-        MySQL5: 'MySQL password hash (SHA1)'
+        MySQL5: 'MySQL password hash (SHA1)',
+        BLAKE2b: 'High-performance cryptographic hash function (512-bit)',
+        BLAKE2s: 'Optimized cryptographic hash function for smaller platforms (256-bit)'
     };
     return descriptions[hashType] || 'Unknown hash type';
 }

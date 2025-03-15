@@ -81,7 +81,7 @@ Encodr is a powerful, privacy-focused Chrome extension that brings professional-
 
 Encodr automatically detects and analyzes hash formats with detailed insights:
 
-- **Hash Types**: MD5, SHA1, SHA256, SHA512, RIPEMD160, BCrypt, Argon2, NTLM, MySQL
+- **Hash Types**: MD5, SHA1, SHA256, SHA512, RIPEMD160, BCrypt, Argon2, NTLM, MySQL, BLAKE2
 - **Analysis Details**: Format identification, specifications, technical description, and usage context
 - **Confidence Levels**: Probability-based format identification
 
